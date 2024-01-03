@@ -5,14 +5,14 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.2.0</version>
+		<version>3.2.1</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.example</groupId>
 	<artifactId>spring-rest-demo</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>spring-rest-demo</name>
-	<description>Demo REST Project Using Spring Boot 3.2</description>
+	<description>Demo REST Client Project Using Spring Boot 3.2</description>
 	<properties>
 		<java.version>21</java.version>
 	</properties>

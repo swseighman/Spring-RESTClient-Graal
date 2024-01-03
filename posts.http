@@ -9,8 +9,8 @@ POST http://localhost:8080/api/posts
 Content-Type: application/json
 
 {
-  "title": "Spring Client Demo",
-  "body": "A simple Spring Client demo using GraalVM",
+  "title": "Spring REST Client Demo",
+  "body": "A simple Spring REST Client demo using GraalVM",
   "userId": 1
 }
 
@@ -20,7 +20,7 @@ Content-Type: application/json
 
 {
   "id": 1,
-  "title": "Spring Client Demo Using GraalVM",
+  "title": "Spring REST Client Demo Using GraalVM",
   "body": "UPDATED BODY",
   "userId": 1
 }
