@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>3.2.0</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
+	<groupId>com.example</groupId>
+	<artifactId>spring-rest-demo</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>spring-rest-demo</name>
+	<description>Demo REST Project Using Spring Boot 3.2</description>
+	<properties>
+		<java.version>21</java.version>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<image>
+					<buildpacks>
+						<buildpack>docker.io/paketobuildpacks/oracle</buildpack>
+						<buildpack>urn:cnb:builder:paketo-buildpacks/java-native-image</buildpack>
+					</buildpacks>
+					</image>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.graalvm.buildtools</groupId>
+				<artifactId>native-maven-plugin</artifactId>
+				<extensions>true</extensions>
+				<configuration>
+					<metadataRepository>
+						<enabled>true</enabled>
+					</metadataRepository>
+					<imageName>${project.artifactId}</imageName>
+					<buildArgs>
+						<!-- Quick build mode is enabled  -->
+						<buildArg>-Ob</buildArg>
+						<!-- G1 is supported on Linux only, comment out next line if on another platform -->
+						<buildArg>--gc=G1</buildArg>
+						<!-- Enable JFR support -->
+						<buildArg>--enable-monitoring=jfr</buildArg>
+						<!-- Show exception stack traces for exceptions during image building -->
+						<buildArg>-H:+ReportExceptionStackTraces</buildArg>
+						<!-- Add a Build Report -->
+						<buildArg>-H:+BuildReport</buildArg>
+					</buildArgs>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<profiles>
+		<!-- Create and instrumented native executable and run it BEFORE building the PGO version below -->
+		<profile>
+			<id>pgo-inst</id>
+			<build>
+				<plugins>
+					<plugin>
+					<groupId>org.graalvm.buildtools</groupId>
+					<artifactId>native-maven-plugin</artifactId>
+					<!--<version>0.9.28</version>-->
+					<configuration>
+						<verbose>true</verbose>
+						<quickBuild>true</quickBuild>
+						<imageName>spring-rest-demo-pgoinst</imageName>
+						<!-- <mainClass>${exec.mainClass}</mainClass> -->
+						<buildArgs combine.children="append">
+							<arg>--pgo-instrument</arg>
+						</buildArgs>
+					</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		
+		<!-- Create the PGO version using the generated instrumented data above -->
+		<profile>
+			<id>pgo</id>
+			<build>
+				<plugins>
+					<plugin>
+					<groupId>org.graalvm.buildtools</groupId>
+					<artifactId>native-maven-plugin</artifactId>
+					<!--<version>0.9.28</version>-->
+					<configuration>
+						<verbose>true</verbose>
+						<quickBuild>true</quickBuild>
+						<imageName>rest-service-demo-pgo</imageName>
+						<buildArgs combine.children="append">
+							<arg>--pgo=${project.basedir}/default.iprof</arg>
+						</buildArgs>
+					</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		
+		<!-- Create a static version -->
+		<profile>
+			<id>static</id>
+			<build>
+				<plugins>
+					<plugin>
+					<groupId>org.graalvm.buildtools</groupId>
+					<artifactId>native-maven-plugin</artifactId>
+					<configuration>
+						<verbose>true</verbose>
+						<quickBuild>true</quickBuild>
+						<imageName>spring-rest-demo-static</imageName>
+						<!--suppress UnresolvedMavenProperty -->
+						<mainClass>${exec.mainClass}</mainClass>
+						<buildArgs>
+							<buildArg>--static</buildArg>
+							<buildArg>--libc=musl</buildArg>
+						</buildArgs>
+                        </configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
+	<repositories>
+		<repository>
+			<id>spring-milestones</id>
+			<name>Spring Milestones</name>
+			<url>https://repo.spring.io/milestone</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>spring-milestones</id>
+			<name>Spring Milestones</name>
+			<url>https://repo.spring.io/milestone</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>
+
+</project>

@@ -1,0 +1,40 @@
+# Example of custom Java runtime using jlink in a multi-stage container build
+FROM container-registry.oracle.com/java/jdk-no-fee-term:21.0.1-oraclelinux8 as jre-build
+
+COPY target/spring-restclient-0.0.1-SNAPSHOT.jar /app/app.jar
+WORKDIR /app
+
+RUN dnf install -y binutils
+
+# List jar modules
+RUN jar xf app.jar
+RUN jdeps \
+    --ignore-missing-deps \
+    --print-module-deps \
+    --multi-release 21 \
+    --recursive \
+    --class-path 'BOOT-INF/lib/*' \
+    app.jar > modules.txt
+
+# Create a custom Java runtime
+RUN $JAVA_HOME/bin/jlink \
+         --add-modules $(cat modules.txt) \
+         --strip-debug \
+         --no-man-pages \
+         --no-header-files \
+         --compress=2 \
+         --output /javaruntime
+
+# Define your base image
+FROM container-registry.oracle.com/os/oraclelinux:8-slim
+
+ENV JAVA_HOME=/opt/java/openjdk
+ENV PATH "${JAVA_HOME}/bin:${PATH}"
+COPY --from=jre-build /javaruntime $JAVA_HOME
+
+# Continue with your application deployment
+RUN mkdir /opt/server
+COPY --from=jre-build /app/app.jar /opt/server/
+CMD ["java", "-jar", "/opt/server/app.jar"]
+
+# docker build -t spring-restclient:jlink .
