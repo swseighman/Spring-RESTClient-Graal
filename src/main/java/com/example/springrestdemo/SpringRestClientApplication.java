@@ -9,10 +9,10 @@ import org.springframework.web.client.support.RestClientAdapter;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 
 @SpringBootApplication
-public class SpringRestDemoApplication {
+public class SpringRestClientApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(SpringRestDemoApplication.class, args);
+        SpringApplication.run(SpringRestClientApplication.class, args);
     }
 
     @Bean
