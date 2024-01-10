@@ -73,7 +73,7 @@ You should see the output below:
 }
 ```
 
-You can use the file `posts.http` to test the endpoint via a HTTP client. 
+You can use the `posts.http` file to test the endpoints via a HTTP client. 
 
 Next, build the native image executable:
 
@@ -111,7 +111,7 @@ Of course you can test the endpoints once again.
 
 ### Building a PGO Executable
 
-You can optimize this native executable even more with additional performance gains and higher throughput by applying Profile-Guided Optimizations (PGO).
+You can optimize this native executable even further by applying Profile-Guided Optimizations (PGO).
 
 With PGO you can collect the profiling data in advance and then feed it to the `native-image` tool, which will use this information to optimize the performance of the resulting binary.
 
