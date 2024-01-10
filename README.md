@@ -6,7 +6,7 @@ Spring Framework 6.1 introduced the RestClient, a new synchronous HTTP client. A
 
 ### Credits
 
-This example is based on a [video/blog](https://www.danvega.dev/blog/rest-client-first-look) from Dan Vega.
+This example is based on a [video/blog](https://www.danvega.dev/blog/rest-client-first-look) from Java Champion Dan Vega.
 
 ### Prerequisites
 
@@ -47,6 +47,34 @@ $ ./mvnw clean package
 ```
 The previous command generates an executable `.jar` file in the `target` directory.
 
+This example uses the [JSONPlaceholder](https://jsonplaceholder.typicode.com/) service to provide a free API we can use for testing.
+
+After building the project, start the application:
+
+```
+$ java -jar target/spring-rest-demo-0.0.1-SNAPSHOT.jar
+```
+
+Now access the endpoint:
+
+```
+http://localhost:8080/api/posts/1
+```
+
+You should see the output below:
+
+
+```
+{
+    "id": 1,
+    "userId": 1,
+    "title": "sunt aut facere repellat provident occaecati excepturi optio reprehenderit",
+    "body": "quia et suscipit\nsuscipit recusandae consequuntur expedita et cum\nreprehenderit molestiae ut ut quas totam\nnostrum rerum est autem sunt rem eveniet architecto"
+}
+```
+
+You can use the file `posts.http` to test the endpoint via a HTTP client. 
+
 Next, build the native image executable:
 
 ```
@@ -78,6 +106,8 @@ $ target/spring-restclient
 
 2024-01-04T15:07:49.964-05:00  INFO 66800 --- [main] c.e.s.SpringRestClientApplication          : Started SpringRestClientApplication in 0.064 seconds (process running for 0.067)
 ```
+
+Of course you can test the endpoints once again.
 
 ### Building a PGO Executable
 
